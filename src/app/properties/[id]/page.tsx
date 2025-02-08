@@ -1,6 +1,18 @@
+import type { Metadata } from "next"
 import Image from "next/image"
 import Header from "../../components/Header"
 import { StarIcon } from "@heroicons/react/24/solid"
+
+type Props = {
+  params: { id: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // ここでメタデータを取得または生成
+  return {
+    title: `物件詳細 - ${params.id}`,
+  }
+}
 
 // この関数は実際のデータフェッチに置き換える必要があります
 const getPropertyData = (id: string) => {
@@ -23,13 +35,7 @@ const getPropertyData = (id: string) => {
   }
 }
 
-interface PageProps {
-  params: {
-    id: string
-  }
-}
-
-export default function PropertyPage({ params }: PageProps) {
+export default function PropertyPage({ params }: Props) {
   const property = getPropertyData(params.id)
 
   return (
