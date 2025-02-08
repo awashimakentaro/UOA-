@@ -1,10 +1,17 @@
+import { Noto_Serif_JP } from "next/font/google"
 import "./globals.css"
 import type { Metadata } from "next"
 import type React from "react" // Import React
 
+const notoSerifJP = Noto_Serif_JP({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+})
+
 export const metadata: Metadata = {
-  title: "会津の賃貸のReal",
-  description: "会津の学生向けアパート情報共有サービス",
+  title: "アパート情報サイト",
+  description: "学生向けアパート情報共有サービス",
 }
 
 export default function RootLayout({
@@ -13,13 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="ja" className={notoSerifJP.className}>
       <body>{children}</body>
     </html>
   )
