@@ -3,9 +3,7 @@ import Header from "../../components/Header"
 import { StarIcon } from "@heroicons/react/24/solid"
 
 // この関数は実際のデータフェッチに置き換える必要があります
-const getPropertyData = async (id: string) => {
-  // 非同期データフェッチをシミュレート
-  await new Promise((resolve) => setTimeout(resolve, 100))
+const getPropertyData = (id: string) => {
   return {
     id,
     name: "サンシャインマンション",
@@ -25,8 +23,14 @@ const getPropertyData = async (id: string) => {
   }
 }
 
-export default async function PropertyPage({ params }: { params: { id: string } }) {
-  const property = await getPropertyData(params.id)
+interface PageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function PropertyPage({ params }: PageProps) {
+  const property = getPropertyData(params.id)
 
   return (
     <div className="min-h-screen bg-gray-100">
