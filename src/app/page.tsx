@@ -1,54 +1,43 @@
-import Image from "next/image"
-import Link from "next/link"
-import { MagnifyingGlassIcon, PencilSquareIcon } from "@heroicons/react/24/outline"
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import Header from "./components/Header"
+import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header />
-
-      {/* メインビジュアル */}
-      <main className="relative min-h-screen pt-16">
-        <div className="absolute inset-0">
-          <Image src="/images/homeBack.jpg" alt="アパートの外観" fill className="object-cover brightness-75" priority />
+      <main className="container mx-auto px-5 pt-24 flex flex-col items-center">
+        {/* ロゴとタイトル */}
+        <div className="text-center mb-12">
+          <h1 className="font-serif text-4xl md:text-6xl mb-4">
+            <span className="text-6xl md:text-3xl">会津</span>の賃貸の
+            <span className="text-5xl md:text-7xl font-bold tracking-wider">Real</span>
+          </h1>
+          <div className="font-serif text-4xl md:text-2xl tracking-widest mb-8">
+            <div>IoA</div>
+            <div className="text-sm text-gray-600">Information Of Aizu apartment</div>
+          </div>
         </div>
+    
+        {/* 口コミ投稿ボタン */}
+        <Link
+          href="/write-review"
+          className="inline-block mb-8 px-8 py-3 border-2 border-black hover:bg-black hover:text-white transition-colors duration-300 font-serif tracking-wider"
+        >
+          口コミを投稿する
+        </Link>
 
-        {/* メインコンテンツ */}
-        <div className="relative h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4">
-          <div className="text-center text-white space-y-8 max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">早速物件の口コミを見る</h1>
-            <p className="text-lg md:text-xl">生の声を聞けちゃうよん</p>
-
-            {/* 検索フォーム */}
-            <div className="max-w-2xl mx-auto w-full">
-              <div className="bg-white rounded-lg shadow-lg p-1">
-                <div className="flex">
-                  <input
-                    type="text"
-                    placeholder="物件名で検索"
-                    className="flex-1 px-4 py-3 text-gray-800 text-lg focus:outline-none rounded-l-lg"
-                  />
-                  <button className="bg-blue-600 text-white px-8 py-3 rounded-lg flex items-center hover:bg-blue-700 transition-colors">
-                    <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
-                    検索
-                  </button>
-                </div>
-              </div>
+        {/* 検索フォーム */}
+        <div className="w-full max-w-xl">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="物件名・エリアで検索"
+              className="w-full py-3 px-4 pr-12 border-2 border-black rounded-none focus:outline-none font-serif"
+            />
+            <div className="absolute right-0 top-0 h-full flex items-center pr-4">
+              <MagnifyingGlassIcon className="h-6 w-6" />
             </div>
-
-            {/* 口コミ投稿ボタン */}
-            <div className="mt-4">
-              <Link
-                href="/write-review"
-                className="inline-flex items-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <PencilSquareIcon className="h-5 w-5 mr-2" />
-                口コミを投稿する
-              </Link>
-            </div>
-
-            
           </div>
         </div>
       </main>
