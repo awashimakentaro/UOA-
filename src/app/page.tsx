@@ -4,7 +4,6 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/Header"
-import { WriteReviewButton } from "@/components/WriteReviewButton"
 import type React from "react"
 
 export default function Home() {
@@ -26,11 +25,11 @@ export default function Home() {
       <main className="container mx-auto px-5 pt-24 flex flex-col items-center justify-center min-h-screen">
         {/* ロゴとタイトル */}
         <div className="text-center mb-8 mt-[-4rem]">
-          <h1 className="font-serif text-4xl md:text-6xl mb-4">
+          <h1 className="font-serif text-5xl mb-4">
             <span className="text-6xl">会津</span>の賃貸の
-            <span className="text-5xl md:text-7xl font-bold tracking-wider">Real</span>
+            <span className="text-6xl font-bold tracking-wider">Real</span>
           </h1>
-          <div className="font-serif text-4xl md:text-2xl tracking-widest mb-4">
+          <div className="font-serif text-2xl tracking-widest mb-4">
             <div>IoA</div>
             <div className="text-sm text-gray-600">Information Of Aizu apartment</div>
           </div>
@@ -38,7 +37,12 @@ export default function Home() {
 
         <div className="flex flex-col items-center space-y-4 mb-8 w-full max-w-4xl">
           {/* 口コミ投稿ボタン */}
-          <WriteReviewButton />
+          <button
+            onClick={handleReviewClick}
+            className="inline-block mb-8 px-8 py-3 border-2 border-black hover:bg-black hover:text-white transition-colors duration-300 font-serif tracking-wider"
+          >
+            口コミを投稿する
+          </button>
 
           {/* 検索フォーム */}
           <div className="w-full max-w-4xl px-4">

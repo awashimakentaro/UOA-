@@ -10,8 +10,9 @@ export function LikedReviewList() {
 
   useEffect(() => {
     const fetchLikedReviews = async () => {
+      const savedLikeIds = JSON.parse(localStorage.getItem("likedReviews") || "[]")
       // この部分は実際のAPIコールに置き換えてください
-      const dummyData: Review[] = [
+      const allReviews: Review[] = [
         {
           id: 1,
           propertyName: "サンシャインマンション",
@@ -33,14 +34,18 @@ export function LikedReviewList() {
             "https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1178&q=80",
         },
       ]
-      setLikedReviews(dummyData)
+      const filteredReviews = allReviews.filter((review) => savedLikeIds.includes(review.id))
+      setLikedReviews(filteredReviews)
     }
 
     fetchLikedReviews()
   }, [])
 
   const handleUnlike = (id: number) => {
-    setLikedReviews(likedReviews.filter((review) => review.id !== id))
+    const updatedReviews = likedReviews.filter((review) => review.id !== id)
+    setLikedReviews(updatedReviews)
+    const updatedLikeIds = updatedReviews.map((review) => review.id)
+    localStorage.setItem("likedReviews", JSON.stringify(updatedLikeIds))
   }
 
   return (

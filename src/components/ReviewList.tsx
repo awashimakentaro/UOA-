@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { StarIcon, HeartIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/solid"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,41 +8,60 @@ import Image from "next/image"
 import type { Review, Question, Answer } from "@/types/review"
 
 export function ReviewList() {
-  const [reviews, setReviews] = useState<Review[]>([
-    {
-      id: 1,
-      propertyName: "サンシャインマンション",
-      propertyImage: "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
-      user: "Aさん",
-      rating: 5,
-      comment: "駅から近くて便利です。部屋も清潔で快適でした。",
-      liked: false,
-      questions: [
-        {
-          id: 1,
-          user: "入居検討者",
-          question: "インターネット環境はどうですか？",
-          createdAt: "2024-02-09",
-          answers: [
-            {
-              id: 1,
-              user: "現入居者",
-              content: "光回線が利用可能で、速度も安定しています。",
-              createdAt: "2024-02-09",
-            },
-          ],
-        },
-      ],
-    },
-    // 他の物件データ...
-  ])
-
+  const [reviews, setReviews] = useState<Review[]>([])
   const [newQuestions, setNewQuestions] = useState<{ [key: number]: string }>({})
   const [newAnswers, setNewAnswers] = useState<{ [key: number]: string }>({})
   const [expandedQuestions, setExpandedQuestions] = useState<number[]>([])
 
+  useEffect(() => {
+    // この部分は実際のAPIコールに置き換えてください
+    const initialReviews: Review[] = [
+      {
+        id: 1,
+        propertyName: "サンシャインマンション",
+        propertyImage: "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+        user: "Aさん",
+        rating: 5,
+        comment: "駅から近くて便利です。部屋も清潔で快適でした。",
+        liked: false,
+        questions: [
+          {
+            id: 1,
+            user: "入居検討者",
+            question: "インターネット環境はどうですか？",
+            createdAt: "2024-02-09",
+            answers: [
+              {
+                id: 1,
+                user: "現入居者",
+                content: "光回線が利用可能で、速度も安定しています。",
+                createdAt: "2024-02-09",
+              },
+            ],
+          },
+        ],
+      },
+      // 他の物件データ...
+    ]
+    setReviews(initialReviews)
+  }, [])
+
+  useEffect(() => {
+    const savedLikes = JSON.parse(localStorage.getItem("likedReviews") || "[]")
+    setReviews((prevReviews) =>
+      prevReviews.map((review) => ({
+        ...review,
+        liked: savedLikes.includes(review.id),
+      })),
+    )
+  }, []) // 空の依存配列
+
   const handleLike = (id: number) => {
-    setReviews(reviews.map((review) => (review.id === id ? { ...review, liked: !review.liked } : review)))
+    const updatedReviews = reviews.map((review) => (review.id === id ? { ...review, liked: !review.liked } : review))
+    setReviews(updatedReviews)
+
+    const likedReviewIds = updatedReviews.filter((review) => review.liked).map((review) => review.id)
+    localStorage.setItem("likedReviews", JSON.stringify(likedReviewIds))
   }
 
   const handleQuestionSubmit = (reviewId: number) => {
