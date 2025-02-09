@@ -3,14 +3,15 @@
 import { useState } from "react"
 import Header from "../components/Header"
 import ReviewList from "../components/ReviewList"
+import ChatSection from "@/components/ChatSection"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MapPinIcon, AdjustmentsHorizontalIcon, MapIcon } from "@heroicons/react/24/outline"
+import { MapPinIcon, AdjustmentsHorizontalIcon, MapIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 export default function ReviewsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [selectedAreas, setSelectedAreas] = useState<string[]>([])
-  const [sortBy, setSortBy] = useState("新着順")
+  const [isChatOpen, setIsChatOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -19,19 +20,10 @@ export default function ReviewsPage() {
         {/* 検索条件バー */}
         <div className="bg-white rounded-lg shadow-sm mb-6">
           <div className="grid grid-cols-3 divide-x">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center justify-center py-4 hover:bg-gray-50 w-full">
-                  <MapPinIcon className="h-5 w-5 mr-2 text-gray-600" />
-                  <span>{sortBy}</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSortBy("新着順")}>新着順</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("評価の高い順")}>評価の高い順</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("評価の低い順")}>評価の低い順</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <button className="flex items-center justify-center py-4 hover:bg-gray-50">
+              <MapPinIcon className="h-5 w-5 mr-2 text-gray-600" />
+              <span>並び替え</span>
+            </button>
             <button
               className="flex items-center justify-center py-4 hover:bg-gray-50"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -77,6 +69,7 @@ export default function ReviewsPage() {
                       <input type="checkbox" className="rounded" />
                       <span>キャッシュバック対象物件</span>
                     </label>
+                    {/* 他の条件を追加 */}
                   </div>
                 </div>
               </div>
@@ -88,10 +81,32 @@ export default function ReviewsPage() {
           )}
         </div>
 
-        {/* レビューリスト */}
-        <div>
-          <h1 className="text-3xl font-bold mb-6">すべての口コミ</h1>
-          <ReviewList />
+        {/* メインコンテンツ */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* レビューリスト */}
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold mb-6">すべての口コミ</h1>
+            <ReviewList />
+
+            {/* スマホ用Q&Aボタン */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full mt-6 lg:hidden flex items-center justify-center gap-2" variant="outline">
+                  <ChatBubbleLeftRightIcon className="h-5 w-5" />Q & A をみる
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <ChatSection />
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* PC用チャットセクション */}
+          <div className="hidden lg:block w-[400px]">
+            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-24">
+              <ChatSection />
+            </div>
+          </div>
         </div>
       </main>
     </div>
