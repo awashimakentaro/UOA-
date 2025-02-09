@@ -6,7 +6,15 @@ export interface Review {
   rating: number
   comment: string
   liked: boolean
-  questions?: Question[] // questionsをオプショナルに変更
+  details?: PropertyDetails
+  questions?: Question[]
+}
+
+export interface PropertyDetails {
+  rent: string
+  size: string
+  location: string
+  features: string[]
 }
 
 export interface Question {
