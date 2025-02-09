@@ -11,6 +11,7 @@ export function LikedReviewList() {
   const [likedReviews, setLikedReviews] = useState<Review[]>([])
   const [newQuestions, setNewQuestions] = useState<{ [key: number]: string }>({})
   const [newAnswers, setNewAnswers] = useState<{ [key: number]: string }>({})
+  const [expandedQuestions, setExpandedQuestions] = useState<number[]>([])
 
   useEffect(() => {
     const fetchLikedReviews = async () => {
@@ -120,113 +121,143 @@ export function LikedReviewList() {
     setNewAnswers({ ...newAnswers, [questionId]: "" })
   }
 
+  const toggleQuestions = (reviewId: number) => {
+    setExpandedQuestions((prev) =>
+      prev.includes(reviewId) ? prev.filter((id) => id !== reviewId) : [...prev, reviewId],
+    )
+  }
+
   return (
     <div className="space-y-6">
       {likedReviews.map((review) => (
         <div key={review.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="relative h-48 md:h-64">
-            <Image
-              src={review.propertyImage || "/placeholder.svg"}
-              alt={review.propertyName}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-2">{review.propertyName}</h2>
-            <div className="flex items-center mb-2">
-              <span className="font-semibold mr-2">{review.user}</span>
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <StarIcon key={i} className={`h-5 w-5 ${i < review.rating ? "text-yellow-400" : "text-gray-300"}`} />
-                ))}
+          <div className="md:flex md:h-[600px]">
+            <div className="md:w-1/2 md:overflow-y-auto">
+              <div className="relative h-48 md:h-64">
+                <Image
+                  src={review.propertyImage || "/placeholder.svg"}
+                  alt={review.propertyName}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-2">{review.propertyName}</h2>
+                <div className="flex items-center mb-2">
+                  <span className="font-semibold mr-2">{review.user}</span>
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <StarIcon
+                        key={i}
+                        className={`h-5 w-5 ${i < review.rating ? "text-yellow-400" : "text-gray-300"}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-700 mb-4">{review.comment}</p>
+
+                {review.details && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <h3 className="font-semibold mb-2">物件詳細</h3>
+                    <ul className="space-y-2">
+                      <li>
+                        <span className="font-medium">家賃:</span> {review.details.rent}
+                      </li>
+                      <li>
+                        <span className="font-medium">広さ:</span> {review.details.size}
+                      </li>
+                      <li>
+                        <span className="font-medium">立地:</span> {review.details.location}
+                      </li>
+                      <li>
+                        <span className="font-medium">特徴:</span>
+                        <ul className="list-disc list-inside ml-4">
+                          {review.details.features.map((feature, index) => (
+                            <li key={index}>{feature}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => handleUnlike(review.id)}
+                  className="flex items-center text-red-500 hover:text-gray-500 mt-4"
+                >
+                  <HeartIcon className="h-5 w-5 mr-1" />
+                  いいね解除
+                </button>
               </div>
             </div>
-            <p className="text-gray-700 mb-4">{review.comment}</p>
 
-            {review.details && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold mb-2">物件詳細</h3>
-                <ul className="space-y-2">
-                  <li>
-                    <span className="font-medium">家賃:</span> {review.details.rent}
-                  </li>
-                  <li>
-                    <span className="font-medium">広さ:</span> {review.details.size}
-                  </li>
-                  <li>
-                    <span className="font-medium">立地:</span> {review.details.location}
-                  </li>
-                  <li>
-                    <span className="font-medium">特徴:</span>
-                    <ul className="list-disc list-inside ml-4">
-                      {review.details.features.map((feature, index) => (
-                        <li key={index}>{feature}</li>
-                      ))}
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-            )}
+            <div className="md:w-1/2 md:border-l md:overflow-y-auto">
+              <div className="p-6">
+                <button
+                  onClick={() => toggleQuestions(review.id)}
+                  className="md:hidden w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  {expandedQuestions.includes(review.id) ? "質問を閉じる" : "質問する"}
+                </button>
 
-            <button
-              onClick={() => handleUnlike(review.id)}
-              className="flex items-center text-red-500 hover:text-gray-500 mt-4"
-            >
-              <HeartIcon className="h-5 w-5 mr-1" />
-              いいね解除
-            </button>
-
-            <div className="border-t pt-4 mt-4">
-              <h3 className="font-semibold mb-4 flex items-center">
-                <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
-                この物件について質問する
-              </h3>
-              <div className="mb-4">
-                <Textarea
-                  placeholder="質問を入力してください"
-                  value={newQuestions[review.id] || ""}
-                  onChange={(e) => setNewQuestions({ ...newQuestions, [review.id]: e.target.value })}
-                  className="mb-2"
-                />
-                <Button onClick={() => handleQuestionSubmit(review.id)}>質問を投稿</Button>
-              </div>
-              <div className="space-y-4">
-                {review.questions?.map((question) => (
-                  <div key={question.id} className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <span className="font-semibold">{question.user}</span>
-                        <p className="mt-1">{question.question}</p>
-                      </div>
-                      <span className="text-sm text-gray-500">{question.createdAt}</span>
+                <div className={`md:block ${expandedQuestions.includes(review.id) ? "block" : "hidden"}`}>
+                  <div className="pt-4">
+                    <h3 className="font-semibold mb-4 flex items-center">
+                      <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
+                      この物件について質問する
+                    </h3>
+                    <div className="mb-4">
+                      <Textarea
+                        placeholder="質問を入力してください"
+                        value={newQuestions[review.id] || ""}
+                        onChange={(e) => setNewQuestions({ ...newQuestions, [review.id]: e.target.value })}
+                        className="mb-2"
+                      />
+                      <Button onClick={() => handleQuestionSubmit(review.id)}>質問を投稿</Button>
                     </div>
-                    <div className="ml-4 mt-2">
-                      {question.answers.map((answer) => (
-                        <div key={answer.id} className="bg-white p-3 rounded-lg mb-2">
-                          <div className="flex justify-between items-start">
+                    <div className="space-y-4">
+                      {review.questions?.map((question) => (
+                        <div key={question.id} className="bg-gray-50 p-4 rounded-lg">
+                          <div className="flex justify-between items-start mb-2">
                             <div>
-                              <span className="font-semibold text-sm">{answer.user}</span>
-                              <p className="mt-1 text-sm">{answer.content}</p>
+                              <span className="font-semibold">{question.user}</span>
+                              <p className="mt-1">{question.question}</p>
                             </div>
-                            <span className="text-xs text-gray-500">{answer.createdAt}</span>
+                            <span className="text-sm text-gray-500">{question.createdAt}</span>
+                          </div>
+                          <div className="ml-4 mt-2">
+                            {question.answers.map((answer) => (
+                              <div key={answer.id} className="bg-white p-3 rounded-lg mb-2">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <span className="font-semibold text-sm">{answer.user}</span>
+                                    <p className="mt-1 text-sm">{answer.content}</p>
+                                  </div>
+                                  <span className="text-xs text-gray-500">{answer.createdAt}</span>
+                                </div>
+                              </div>
+                            ))}
+                            <div className="mt-2">
+                              <Textarea
+                                placeholder="回答を入力してください"
+                                value={newAnswers[question.id] || ""}
+                                onChange={(e) => setNewAnswers({ ...newAnswers, [question.id]: e.target.value })}
+                                className="mb-2"
+                              />
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleAnswerSubmit(review.id, question.id)}
+                              >
+                                回答する
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       ))}
-                      <div className="mt-2">
-                        <Textarea
-                          placeholder="回答を入力してください"
-                          value={newAnswers[question.id] || ""}
-                          onChange={(e) => setNewAnswers({ ...newAnswers, [question.id]: e.target.value })}
-                          className="mb-2"
-                        />
-                        <Button variant="outline" size="sm" onClick={() => handleAnswerSubmit(review.id, question.id)}>
-                          回答する
-                        </Button>
-                      </div>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
