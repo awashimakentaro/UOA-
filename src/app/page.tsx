@@ -1,8 +1,26 @@
+"use client"
+
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
+import { useSession, signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import Header from "./components/Header"
-import Link from "next/link"
+import type React from "react" // Added import for React
 
 export default function Home() {
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  const handleReviewClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (!session) {
+      // ログインしていない場合、ログインページに遷移
+      signIn("google", { callbackUrl: "/write-review" })
+    } else {
+      // ログインしている場合、直接レビュー投稿ページに遷移
+      router.push("/write-review")
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -18,14 +36,14 @@ export default function Home() {
             <div className="text-sm text-gray-600">Information Of Aizu apartment</div>
           </div>
         </div>
-    
+
         {/* 口コミ投稿ボタン */}
-        <Link
-          href="/write-review"
+        <button
+          onClick={handleReviewClick}
           className="inline-block mb-8 px-8 py-3 border-2 border-black hover:bg-black hover:text-white transition-colors duration-300 font-serif tracking-wider"
         >
           口コミを投稿する
-        </Link>
+        </button>
 
         {/* 検索フォーム */}
         <div className="w-full max-w-xl">

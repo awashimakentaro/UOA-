@@ -1,23 +1,34 @@
 "use client"
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import Header from "../components/Header"
 import { StarIcon } from "@heroicons/react/24/solid"
 
 export default function WriteReviewPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [propertyName, setPropertyName] = useState("")
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ログインしていない場合はホームページにリダイレクト
+  if (status === "unauthenticated") {
+    router.push("/")
+    return null
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // ここで口コミデータを送信する処理を実装します
-    console.log({ propertyName, rating, comment })
+    console.log({ propertyName, rating, comment, userId: session?.user?.email })
     // 送信後、フォームをリセットするなどの処理を行います
     setPropertyName("")
     setRating(0)
     setComment("")
     alert("口コミが投稿されました！")
+    router.push("/reviews")
   }
 
   return (
