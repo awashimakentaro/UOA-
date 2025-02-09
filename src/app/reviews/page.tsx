@@ -4,11 +4,13 @@ import { useState } from "react"
 import Header from "../components/Header"
 import ReviewList from "../components/ReviewList"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MapPinIcon, AdjustmentsHorizontalIcon, MapIcon } from "@heroicons/react/24/outline"
 
 export default function ReviewsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [selectedAreas, setSelectedAreas] = useState<string[]>([])
+  const [sortBy, setSortBy] = useState("新着順")
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -17,10 +19,19 @@ export default function ReviewsPage() {
         {/* 検索条件バー */}
         <div className="bg-white rounded-lg shadow-sm mb-6">
           <div className="grid grid-cols-3 divide-x">
-            <button className="flex items-center justify-center py-4 hover:bg-gray-50">
-              <MapPinIcon className="h-5 w-5 mr-2 text-gray-600" />
-              <span>並び替え</span>
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center justify-center py-4 hover:bg-gray-50 w-full">
+                  <MapPinIcon className="h-5 w-5 mr-2 text-gray-600" />
+                  <span>{sortBy}</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => setSortBy("新着順")}>新着順</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("評価の高い順")}>評価の高い順</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("評価の低い順")}>評価の低い順</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <button
               className="flex items-center justify-center py-4 hover:bg-gray-50"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -66,7 +77,6 @@ export default function ReviewsPage() {
                       <input type="checkbox" className="rounded" />
                       <span>キャッシュバック対象物件</span>
                     </label>
-                    {/* 他の条件を追加 */}
                   </div>
                 </div>
               </div>
