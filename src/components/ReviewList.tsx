@@ -106,6 +106,10 @@ export function ReviewList() {
 
     const likedReviewIds = updatedReviews.filter((review) => review.liked).map((review) => review.id)
     localStorage.setItem("likedReviews", JSON.stringify(likedReviewIds))
+
+    // カスタムイベントを発行して、LikedReviewListに通知
+    const event = new CustomEvent("likedReviewsUpdated", { detail: likedReviewIds })
+    window.dispatchEvent(event)
   }
 
   return (

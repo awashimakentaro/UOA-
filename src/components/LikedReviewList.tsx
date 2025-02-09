@@ -5,6 +5,7 @@ import Image from "next/image"
 import { StarIcon, HeartIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/solid"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Review, Question, Answer } from "@/types/review"
 
 export function LikedReviewList() {
@@ -21,42 +22,95 @@ export function LikedReviewList() {
         {
           id: 1,
           propertyName: "サンシャインマンション",
+          propertyImage: "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
           user: "Aさん",
           rating: 5,
           comment: "駅から近くて便利です。部屋も清潔で快適でした。",
-          liked: true,
-          propertyImage:
-            "https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+          liked: false,
           details: {
             rent: "80,000円",
             size: "25㎡",
             location: "駅から徒歩5分",
             features: ["エアコン", "バス・トイレ別", "宅配ボックス"],
           },
-          questions: [
-            {
-              id: 1,
-              user: "入居検討者",
-              question: "インターネット環境はどうですか？",
-              createdAt: "2024-02-09",
-              answers: [
-                {
-                  id: 1,
-                  user: "現入居者",
-                  content: "光回線が利用可能で、速度も安定しています。",
-                  createdAt: "2024-02-09",
-                },
-              ],
-            },
-          ],
         },
-        // 他の物件データ...
+        {
+          id: 2,
+          propertyName: "グリーンヒルズ会津",
+          propertyImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+          user: "Bさん",
+          rating: 4,
+          comment: "自然が豊かで静かな環境です。部屋は少し古いですが、管理が行き届いています。",
+          liked: false,
+          details: {
+            rent: "65,000円",
+            size: "30㎡",
+            location: "バス停から徒歩3分",
+            features: ["駐車場付き", "ペット可", "オートロック"],
+          },
+        },
+        {
+          id: 3,
+          propertyName: "ブルースカイハイツ",
+          propertyImage: "https://images.unsplash.com/photo-1576941089067-2de3c901e126",
+          user: "Cさん",
+          rating: 3,
+          comment: "眺めが良く、日当たりも良好です。ただ、エレベーターがないのが少し不便です。",
+          liked: false,
+          details: {
+            rent: "70,000円",
+            size: "22㎡",
+            location: "駅から徒歩10分",
+            features: ["インターネット無料", "コインランドリー", "バルコニー付き"],
+          },
+        },
+        {
+          id: 4,
+          propertyName: "さくら荘",
+          propertyImage: "https://images.unsplash.com/photo-1574362848149-11496d93a7c7",
+          user: "Dさん",
+          rating: 5,
+          comment: "和風の落ち着いた雰囲気が素敵です。大学にも近くて便利です。",
+          liked: false,
+          details: {
+            rent: "55,000円",
+            size: "20㎡",
+            location: "大学から徒歩7分",
+            features: ["畳部屋", "共用キッチン", "自転車置き場"],
+          },
+        },
+        {
+          id: 5,
+          propertyName: "メイプルコート",
+          propertyImage: "https://images.unsplash.com/photo-1574958269340-fa927503f3dd",
+          user: "Eさん",
+          rating: 4,
+          comment: "セキュリティが充実していて安心です。コンビニも近くて便利ですね。",
+          liked: false,
+          details: {
+            rent: "75,000円",
+            size: "28㎡",
+            location: "駅から徒歩8分",
+            features: ["防犯カメラ", "宅配ボックス", "24時間管理人"],
+          },
+        },
       ]
       const filteredReviews = allReviews.filter((review) => savedLikeIds.includes(review.id))
       setLikedReviews(filteredReviews)
     }
 
     fetchLikedReviews()
+
+    // カスタムイベントリスナーを追加
+    const handleLikedReviewsUpdated = () => {
+      fetchLikedReviews()
+    }
+    window.addEventListener("likedReviewsUpdated", handleLikedReviewsUpdated)
+
+    // クリーンアップ関数
+    return () => {
+      window.removeEventListener("likedReviewsUpdated", handleLikedReviewsUpdated)
+    }
   }, [])
 
   const handleUnlike = (id: number) => {
@@ -64,6 +118,10 @@ export function LikedReviewList() {
     setLikedReviews(updatedReviews)
     const updatedLikeIds = updatedReviews.map((review) => review.id)
     localStorage.setItem("likedReviews", JSON.stringify(updatedLikeIds))
+
+    // カスタムイベントを発行して、ReviewListに通知
+    const event = new CustomEvent("likedReviewsUpdated", { detail: updatedLikeIds })
+    window.dispatchEvent(event)
   }
 
   const handleQuestionSubmit = (reviewId: number) => {
@@ -131,8 +189,8 @@ export function LikedReviewList() {
     <div className="space-y-6">
       {likedReviews.map((review) => (
         <div key={review.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="md:flex md:h-[600px]">
-            <div className="md:w-1/2 md:overflow-y-auto">
+          <div className="md:flex">
+            <div className="md:w-1/2">
               <div className="relative h-48 md:h-64">
                 <Image
                   src={review.propertyImage || "/placeholder.svg"}
@@ -191,30 +249,30 @@ export function LikedReviewList() {
               </div>
             </div>
 
-            <div className="md:w-1/2 md:border-l md:overflow-y-auto">
+            <div className="md:w-1/2 md:border-l">
               <div className="p-6">
                 <button
                   onClick={() => toggleQuestions(review.id)}
-                  className="md:hidden w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="md:hidden w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors mb-4"
                 >
                   {expandedQuestions.includes(review.id) ? "質問を閉じる" : "質問する"}
                 </button>
 
                 <div className={`md:block ${expandedQuestions.includes(review.id) ? "block" : "hidden"}`}>
-                  <div className="pt-4">
-                    <h3 className="font-semibold mb-4 flex items-center">
-                      <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
-                      この物件について質問する
-                    </h3>
-                    <div className="mb-4">
-                      <Textarea
-                        placeholder="質問を入力してください"
-                        value={newQuestions[review.id] || ""}
-                        onChange={(e) => setNewQuestions({ ...newQuestions, [review.id]: e.target.value })}
-                        className="mb-2"
-                      />
-                      <Button onClick={() => handleQuestionSubmit(review.id)}>質問を投稿</Button>
-                    </div>
+                  <h3 className="font-semibold mb-4 flex items-center">
+                    <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
+                    この物件について質問する
+                  </h3>
+                  <div className="mb-4">
+                    <Textarea
+                      placeholder="質問を入力してください"
+                      value={newQuestions[review.id] || ""}
+                      onChange={(e) => setNewQuestions({ ...newQuestions, [review.id]: e.target.value })}
+                      className="mb-2"
+                    />
+                    <Button onClick={() => handleQuestionSubmit(review.id)}>質問を投稿</Button>
+                  </div>
+                  <ScrollArea className="h-[400px] pr-4">
                     <div className="space-y-4">
                       {review.questions?.map((question) => (
                         <div key={question.id} className="bg-gray-50 p-4 rounded-lg">
@@ -256,7 +314,7 @@ export function LikedReviewList() {
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </ScrollArea>
                 </div>
               </div>
             </div>
