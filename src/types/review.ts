@@ -6,7 +6,7 @@ export interface Review {
   rating: number
   comment: string
   liked: boolean
-  questions?: Question[]
+  questions?: Question[] // questionsをオプショナルに変更
 }
 
 export interface Question {

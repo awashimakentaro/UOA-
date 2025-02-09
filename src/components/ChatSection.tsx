@@ -13,7 +13,7 @@ interface Message {
   timestamp: Date
 }
 
-export default function ChatSection() {
+export function ChatSection() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -28,7 +28,6 @@ export default function ChatSection() {
     e.preventDefault()
     if (!newMessage.trim()) return
 
-    // ユーザーのメッセージを追加
     const userMessage: Message = {
       id: messages.length + 1,
       content: newMessage,
@@ -37,7 +36,6 @@ export default function ChatSection() {
     }
     setMessages([...messages, userMessage])
 
-    // 自動返信（実際のAPIコールに置き換えることができます）
     setTimeout(() => {
       const botMessage: Message = {
         id: messages.length + 2,
@@ -57,8 +55,6 @@ export default function ChatSection() {
         <h2 className="text-xl font-bold">Q & A</h2>
         <span className="text-sm text-gray-500">通常1営業日以内に回答</span>
       </div>
-
-      {/* メッセージ表示エリア */}
       <ScrollArea className="flex-1 pr-4">
         <div className="space-y-4">
           {messages.map((message) => (
@@ -83,8 +79,6 @@ export default function ChatSection() {
           ))}
         </div>
       </ScrollArea>
-
-      {/* メッセージ入力フォーム */}
       <form onSubmit={handleSendMessage} className="mt-4 flex gap-2">
         <Input
           type="text"

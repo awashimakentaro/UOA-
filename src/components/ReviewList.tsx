@@ -5,34 +5,9 @@ import { StarIcon, HeartIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/sol
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import Image from "next/image"
+import type { Review, Question, Answer } from "@/types/review"
 
-interface Question {
-  id: number
-  user: string
-  question: string
-  answers: Answer[]
-  createdAt: string
-}
-
-interface Answer {
-  id: number
-  user: string
-  content: string
-  createdAt: string
-}
-
-interface Review {
-  id: number
-  propertyName: string
-  propertyImage: string
-  user: string
-  rating: number
-  comment: string
-  liked: boolean
-  questions: Question[]
-}
-
-export default function ReviewList() {
+export function ReviewList() {
   const [reviews, setReviews] = useState<Review[]>([
     {
       id: 1,
@@ -84,7 +59,7 @@ export default function ReviewList() {
         }
         return {
           ...review,
-          questions: [...review.questions, newQuestion],
+          questions: [...(review.questions || []), newQuestion],
         }
       }
       return review
@@ -98,7 +73,7 @@ export default function ReviewList() {
     if (!newAnswers[questionId]?.trim()) return
 
     const updatedReviews = reviews.map((review) => {
-      if (review.id === reviewId) {
+      if (review.id === reviewId && review.questions) {
         return {
           ...review,
           questions: review.questions.map((q) => {
@@ -137,7 +112,6 @@ export default function ReviewList() {
     <div className="space-y-6">
       {reviews.map((review) => (
         <div key={review.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* 物件情報ヘッダー */}
           <div className="relative h-48 w-full">
             <Image
               src={review.propertyImage || "/placeholder.svg"}
@@ -146,11 +120,8 @@ export default function ReviewList() {
               className="object-cover"
             />
           </div>
-
           <div className="p-6">
             <h2 className="text-xl font-semibold mb-2">{review.propertyName}</h2>
-
-            {/* レビュー本文 */}
             <div className="mb-4">
               <div className="flex items-center mb-2">
                 <span className="font-semibold mr-2">{review.user}</span>
@@ -165,8 +136,6 @@ export default function ReviewList() {
               </div>
               <p className="text-gray-700">{review.comment}</p>
             </div>
-
-            {/* いいねボタン */}
             <button
               onClick={() => handleLike(review.id)}
               className={`flex items-center ${review.liked ? "text-red-500" : "text-gray-500"} hover:text-red-500 mb-4`}
@@ -174,15 +143,11 @@ export default function ReviewList() {
               <HeartIcon className="h-5 w-5 mr-1" />
               {review.liked ? "いいね済み" : "いいね"}
             </button>
-
-            {/* Q&Aセクション */}
             <div className="border-t pt-4">
               <h3 className="font-semibold mb-4 flex items-center">
                 <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
                 この物件について質問する
               </h3>
-
-              {/* 質問投稿フォーム */}
               <div className="mb-4">
                 <Textarea
                   placeholder="質問を入力してください"
@@ -192,10 +157,8 @@ export default function ReviewList() {
                 />
                 <Button onClick={() => handleQuestionSubmit(review.id)}>質問を投稿</Button>
               </div>
-
-              {/* 質問一覧 */}
               <div className="space-y-4">
-                {review.questions.map((question) => (
+                {review.questions?.map((question) => (
                   <div key={question.id} className="bg-gray-50 p-4 rounded-lg">
                     <div className="flex justify-between items-start mb-2">
                       <div>
@@ -204,8 +167,6 @@ export default function ReviewList() {
                       </div>
                       <span className="text-sm text-gray-500">{question.createdAt}</span>
                     </div>
-
-                    {/* 回答一覧 */}
                     <div className="ml-4 mt-2">
                       {question.answers.map((answer) => (
                         <div key={answer.id} className="bg-white p-3 rounded-lg mb-2">
@@ -218,8 +179,6 @@ export default function ReviewList() {
                           </div>
                         </div>
                       ))}
-
-                      {/* 回答投稿フォーム */}
                       <div className="mt-2">
                         <Textarea
                           placeholder="回答を入力してください"

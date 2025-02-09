@@ -1,47 +1,26 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import Header from "../../components/Header"
+import { Header } from "@/components/Header"
 import { StarIcon } from "@heroicons/react/24/solid"
+import { getPropertyData } from "@/lib/api"
 
 type Props = {
   params: { id: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // ここでメタデータを取得または生成
+  const property = await getPropertyData(params.id)
   return {
-    title: `物件詳細 - ${params.id}`,
+    title: `物件詳細 - ${property.name}`,
   }
 }
 
-// この関数は実際のデータフェッチに置き換える必要があります
-const getPropertyData = (id: string) => {
-  return {
-    id,
-    name: "サンシャインマンション",
-    address: "東京都新宿区西新宿1-1-1",
-    image: "/images/property-image.jpg",
-    rating: 4.5,
-    reviews: [
-      { id: 1, user: "Aさん", rating: 5, comment: "駅から近くて便利です。部屋も清潔で快適でした。" },
-      {
-        id: 2,
-        user: "Bさん",
-        rating: 4,
-        comment: "周辺の環境が良く、静かで住みやすいです。ただ、家賃が少し高めかな。",
-      },
-      { id: 3, user: "Cさん", rating: 4, comment: "管理人さんの対応が丁寧で安心して住めます。設備は少し古いかも。" },
-    ],
-  }
-}
-
-export default function PropertyPage({ params }: Props) {
-  const property = getPropertyData(params.id)
+export default async function PropertyPage({ params }: Props) {
+  const property = await getPropertyData(params.id)
 
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-
       <main className="container mx-auto px-4 py-8 pt-24">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="relative h-64 sm:h-80 md:h-96">
