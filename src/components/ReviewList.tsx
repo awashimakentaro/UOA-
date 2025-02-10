@@ -39,7 +39,7 @@ export function ReviewList() {
         details: {
           rent: "80,000円",
           size: "25㎡",
-          location: "駅から徒歩5分",
+          location: "会津若松市 駅から徒歩5分",
           features: ["エアコン", "バス・トイレ別", "宅配ボックス"],
         },
       },
@@ -57,7 +57,7 @@ export function ReviewList() {
         details: {
           rent: "65,000円",
           size: "30㎡",
-          location: "バス停から徒歩3分",
+          location: "喜多方市 バス停から徒歩3分",
           features: ["駐車場付き", "ペット可", "オートロック"],
         },
       },
@@ -75,44 +75,8 @@ export function ReviewList() {
         details: {
           rent: "70,000円",
           size: "22㎡",
-          location: "駅から徒歩10分",
+          location: "会津若松市 駅から徒歩10分",
           features: ["インターネット無料", "コインランドリー", "バルコニー付き"],
-        },
-      },
-      {
-        id: 4,
-        propertyName: "さくら荘",
-        propertyImages: [
-          "https://images.unsplash.com/photo-1574362848149-11496d93a7c7",
-          "https://images.unsplash.com/photo-1598928636135-d72ac54c4621",
-          "https://images.unsplash.com/photo-1484154218962-a197022b5858",
-        ],
-        rating: 4.7,
-        reviewCount: 12,
-        liked: false,
-        details: {
-          rent: "55,000円",
-          size: "20㎡",
-          location: "大学から徒歩7分",
-          features: ["畳部屋", "共用キッチン", "自転車置き場"],
-        },
-      },
-      {
-        id: 5,
-        propertyName: "メイプルコート",
-        propertyImages: [
-          "https://images.unsplash.com/photo-1574958269340-fa927503f3dd",
-          "https://images.unsplash.com/photo-1598928636135-d72ac54c4621",
-          "https://images.unsplash.com/photo-1560185127-6ed189bf02f4",
-        ],
-        rating: 4.3,
-        reviewCount: 9,
-        liked: false,
-        details: {
-          rent: "75,000円",
-          size: "28㎡",
-          location: "駅から徒歩8分",
-          features: ["防犯カメラ", "宅配ボックス", "24時間管理人"],
         },
       },
     ]
@@ -144,6 +108,7 @@ export function ReviewList() {
     const likedReviewIds = updatedReviews.filter((review) => review.liked).map((review) => review.id)
     localStorage.setItem("likedReviews", JSON.stringify(likedReviewIds))
 
+    // カスタムイベントを発行
     const event = new CustomEvent("likedReviewsUpdated", { detail: likedReviewIds })
     window.dispatchEvent(event)
   }

@@ -31,11 +31,11 @@ export function LikedReviewList() {
           rating: 5,
           reviewCount: 10,
           comment: "駅から近くて便利です。部屋も清潔で快適でした。",
-          liked: false,
+          liked: true,
           details: {
             rent: "80,000円",
             size: "25㎡",
-            location: "駅から徒歩5分",
+            location: "会津若松市 駅から徒歩5分",
             features: ["エアコン", "バス・トイレ別", "宅配ボックス"],
           },
           questions: [
@@ -55,7 +55,48 @@ export function LikedReviewList() {
             },
           ],
         },
-        // 他の物件データ...
+        {
+          id: 2,
+          propertyName: "グリーンヒルズ会津",
+          propertyImages: [
+            "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+            "https://images.unsplash.com/photo-1584622650111-993a426fbf0a",
+            "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+          ],
+          user: "Bさん",
+          rating: 4,
+          reviewCount: 8,
+          comment: "自然が豊かで静かな環境です。部屋は少し古いですが、管理が行き届いています。",
+          liked: true,
+          details: {
+            rent: "65,000円",
+            size: "30㎡",
+            location: "喜多方市 バス停から徒歩3分",
+            features: ["駐車場付き", "ペット可", "オートロック"],
+          },
+          questions: [],
+        },
+        {
+          id: 3,
+          propertyName: "ブルースカイハイツ",
+          propertyImages: [
+            "https://images.unsplash.com/photo-1576941089067-2de3c901e126",
+            "https://images.unsplash.com/photo-1598928506311-c55ded91a20c",
+            "https://images.unsplash.com/photo-1515263487990-61b07816b324",
+          ],
+          user: "Cさん",
+          rating: 3,
+          reviewCount: 15,
+          comment: "眺めが良く、日当たりも良好です。ただ、エレベーターがないのが少し不便です。",
+          liked: true,
+          details: {
+            rent: "70,000円",
+            size: "22㎡",
+            location: "会津若松市 駅から徒歩10分",
+            features: ["インターネット無料", "コインランドリー", "バルコニー付き"],
+          },
+          questions: [],
+        },
       ]
       const filteredReviews = allReviews.filter((review) => savedLikeIds.includes(review.id))
       setLikedReviews(filteredReviews)
