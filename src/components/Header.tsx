@@ -2,13 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import {
-  ListBulletIcon,
-  HeartIcon,
-  LockClosedIcon,
-  PencilIcon,
-  ChatBubbleLeftRightIcon,
-} from "@heroicons/react/24/outline"
+import { ListBulletIcon, HeartIcon, LockClosedIcon, PencilIcon } from "@heroicons/react/24/outline"
 import { useSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
@@ -25,7 +19,7 @@ export function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm shadow-sm z-50">
+    <header className="bg-white/90 backdrop-blur-sm shadow-sm z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center font-serif">
         <Link href="/" className="flex items-center">
           <Image src="/images/uoa.jpg" alt="UoAハッカソンロゴ" width={100} height={40} className="object-contain" />
@@ -46,12 +40,6 @@ export function Header() {
               <Link href="/liked-reviews" className="flex flex-col items-center text-gray-600 hover:text-gray-800">
                 <HeartIcon className="h-6 w-6" />
                 <span className="text-xs mt-1">いいね</span>
-              </Link>
-            </li>
-            <li>
-              <Link href="/q-and-a" className="flex flex-col items-center text-gray-600 hover:text-gray-800">
-                <ChatBubbleLeftRightIcon className="h-6 w-6" />
-                <span className="text-xs mt-1">Q&A</span>
               </Link>
             </li>
             <li>

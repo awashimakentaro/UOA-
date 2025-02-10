@@ -1,17 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/Header"
+import { SearchForm } from "@/components/SearchForm"
 import { SearchResults } from "@/components/SearchResults"
 import type { Review } from "@/types/review"
 
 export default function Home() {
   const { data: session } = useSession()
   const router = useRouter()
-  const [searchTerm, setSearchTerm] = useState("")
   const [searchResults, setSearchResults] = useState<Review[]>([])
 
   const handleReviewClick = (e: React.MouseEvent) => {
@@ -23,8 +22,7 @@ export default function Home() {
     }
   }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSearch = (searchTerm: string) => {
     // この部分は実際のAPIコールに置き換えてください
     const allReviews: Review[] = [
       {
@@ -40,7 +38,7 @@ export default function Home() {
         details: {
           rent: "80,000円",
           size: "25㎡",
-          location: "駅から徒歩5分",
+          location: "会津若松市 駅から徒歩5分",
           features: ["エアコン", "バス・トイレ別", "宅配ボックス"],
         },
       },
@@ -57,14 +55,16 @@ export default function Home() {
         details: {
           rent: "65,000円",
           size: "30㎡",
-          location: "バス停から徒歩3分",
+          location: "喜多方市 バス停から徒歩3分",
           features: ["駐車場付き", "ペット可", "オートロック"],
         },
       },
     ]
 
-    const filteredResults = allReviews.filter((review) =>
-      review.propertyName.toLowerCase().includes(searchTerm.toLowerCase()),
+    const filteredResults = allReviews.filter(
+      (review) =>
+        review.propertyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        review.details?.location.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     setSearchResults(filteredResults)
   }
@@ -72,9 +72,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main className="container mx-auto px-5 pt-24 flex flex-col items-center justify-center min-h-screen">
+      <main className="container mx-auto px-5 py-8 flex flex-col items-center justify-center">
         {/* ロゴとタイトル */}
-        <div className="text-center mb-8 mt-[-4rem]">
+        <div className="text-center mb-12">
           <h1 className="font-serif text-5xl mb-4">
             <span className="text-6xl">会津</span>の賃貸の
             <span className="text-6xl font-bold tracking-wider">Real</span>
@@ -85,30 +85,17 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center space-y-4 mb-8 w-full max-w-4xl">
+        <div className="flex flex-col items-center space-y-8 mb-12 w-full max-w-4xl">
           {/* 口コミ投稿ボタン */}
           <button
             onClick={handleReviewClick}
-            className="inline-block mb-8 px-8 py-3 border-2 border-black hover:bg-black hover:text-white transition-colors duration-300 font-serif tracking-wider"
+            className="inline-block px-8 py-3 border-2 border-black hover:bg-black hover:text-white transition-colors duration-300 font-serif tracking-wider"
           >
             口コミを投稿する
           </button>
 
           {/* 検索フォーム */}
-          <form onSubmit={handleSearch} className="w-full max-w-4xl px-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="物件名・エリアで検索"
-                className="w-full py-3 px-4 pr-12 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-serif"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <button type="submit" className="absolute right-0 top-0 h-full flex items-center pr-4">
-                <MagnifyingGlassIcon className="h-6 w-6" />
-              </button>
-            </div>
-          </form>
+          <SearchForm onSearch={handleSearch} />
         </div>
 
         {/* 検索結果 */}
