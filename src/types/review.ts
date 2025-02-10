@@ -12,7 +12,7 @@ export interface Review {
 }
 
 export interface PropertyDetails {
-  rent: string
+  rent: number // 文字列から数値に変更
   size: string
   location: string
   features: string[]

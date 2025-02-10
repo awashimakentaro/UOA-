@@ -9,18 +9,28 @@ import {
   PencilIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  AdjustmentsHorizontalIcon,
 } from "@heroicons/react/24/solid"
 import type { Review, PropertyReview } from "@/types/review"
 import { Button } from "@/components/ui/button"
 import { PropertyReviews } from "@/components/PropertyReviews"
 import { AddReviewModal } from "@/components/AddReviewModal"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+
+type SortOption = "rating" | "reviewCount" | "rent"
+type FilterOption = "hasParking" | "isPetFriendly" | "hasAirCon"
 
 export function ReviewList() {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [filteredReviews, setFilteredReviews] = useState<Review[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false)
   const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: number]: number }>({})
+  const [sortOption, setSortOption] = useState<SortOption>("rating")
+  const [filterOptions, setFilterOptions] = useState<FilterOption[]>([])
 
   useEffect(() => {
     // この部分は実際のAPIコールに置き換えてください
@@ -37,7 +47,7 @@ export function ReviewList() {
         reviewCount: 10,
         liked: false,
         details: {
-          rent: "80,000円",
+          rent: 80000,
           size: "25㎡",
           location: "会津若松市 駅から徒歩5分",
           features: ["エアコン", "バス・トイレ別", "宅配ボックス"],
@@ -55,7 +65,7 @@ export function ReviewList() {
         reviewCount: 8,
         liked: false,
         details: {
-          rent: "65,000円",
+          rent: 65000,
           size: "30㎡",
           location: "喜多方市 バス停から徒歩3分",
           features: ["駐車場付き", "ペット可", "オートロック"],
@@ -73,7 +83,7 @@ export function ReviewList() {
         reviewCount: 15,
         liked: false,
         details: {
-          rent: "70,000円",
+          rent: 70000,
           size: "22㎡",
           location: "会津若松市 駅から徒歩10分",
           features: ["インターネット無料", "コインランドリー", "バルコニー付き"],
@@ -81,6 +91,7 @@ export function ReviewList() {
       },
     ]
     setReviews(initialReviews)
+    setFilteredReviews(initialReviews)
     const initialImageIndex = initialReviews.reduce(
       (acc, review) => {
         acc[review.id] = 0
@@ -100,6 +111,32 @@ export function ReviewList() {
       })),
     )
   }, [])
+
+  useEffect(() => {
+    const sorted = [...reviews]
+    if (sortOption === "rating") {
+      sorted.sort((a, b) => b.rating - a.rating)
+    } else if (sortOption === "reviewCount") {
+      sorted.sort((a, b) => b.reviewCount - a.reviewCount)
+    } else if (sortOption === "rent") {
+      sorted.sort((a, b) => (a.details?.rent || 0) - (b.details?.rent || 0))
+    }
+
+    const filtered = sorted.filter((review) => {
+      if (filterOptions.includes("hasParking") && !review.details?.features.includes("駐車場付き")) {
+        return false
+      }
+      if (filterOptions.includes("isPetFriendly") && !review.details?.features.includes("ペット可")) {
+        return false
+      }
+      if (filterOptions.includes("hasAirCon") && !review.details?.features.includes("エアコン")) {
+        return false
+      }
+      return true
+    })
+
+    setFilteredReviews(filtered)
+  }, [reviews, sortOption, filterOptions])
 
   const handleLike = (id: number) => {
     const updatedReviews = reviews.map((review) => (review.id === id ? { ...review, liked: !review.liked } : review))
@@ -142,10 +179,84 @@ export function ReviewList() {
     })
   }
 
+  const handleSortChange = (option: SortOption) => {
+    setSortOption(option)
+  }
+
+  const handleFilterChange = (option: FilterOption) => {
+    setFilterOptions((prev) => (prev.includes(option) ? prev.filter((o) => o !== option) : [...prev, option]))
+  }
+
   return (
-    <div className="space-y-6">
-      {reviews.map((review) => (
-        <div key={review.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="space-y-6 bg-gray-100 min-h-screen p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">物件一覧</h2>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              <AdjustmentsHorizontalIcon className="h-5 w-5 mr-2" />
+              並び替え・絞り込み
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle>並び替え・絞り込み</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold mb-2">並び替え</h3>
+                <div className="space-y-2">
+                  <Label className="flex items-center space-x-2">
+                    <input type="radio" checked={sortOption === "rating"} onChange={() => handleSortChange("rating")} />
+                    <span>評価順</span>
+                  </Label>
+                  <Label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      checked={sortOption === "reviewCount"}
+                      onChange={() => handleSortChange("reviewCount")}
+                    />
+                    <span>口コミ数順</span>
+                  </Label>
+                  <Label className="flex items-center space-x-2">
+                    <input type="radio" checked={sortOption === "rent"} onChange={() => handleSortChange("rent")} />
+                    <span>家賃順</span>
+                  </Label>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">絞り込み</h3>
+                <div className="space-y-2">
+                  <Label className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={filterOptions.includes("hasParking")}
+                      onCheckedChange={() => handleFilterChange("hasParking")}
+                    />
+                    <span>駐車場あり</span>
+                  </Label>
+                  <Label className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={filterOptions.includes("isPetFriendly")}
+                      onCheckedChange={() => handleFilterChange("isPetFriendly")}
+                    />
+                    <span>ペット可</span>
+                  </Label>
+                  <Label className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={filterOptions.includes("hasAirCon")}
+                      onCheckedChange={() => handleFilterChange("hasAirCon")}
+                    />
+                    <span>エアコン付き</span>
+                  </Label>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {filteredReviews.map((review) => (
+        <div key={review.id} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-[400px] p-4">
               <div className="w-full h-[300px] md:h-[400px] relative">
@@ -195,7 +306,7 @@ export function ReviewList() {
                   <h3 className="font-semibold mb-2">物件詳細</h3>
                   <ul className="space-y-2">
                     <li>
-                      <span className="font-medium">家賃:</span> {review.details.rent}
+                      <span className="font-medium">家賃:</span> {review.details?.rent.toLocaleString()}円
                     </li>
                     <li>
                       <span className="font-medium">広さ:</span> {review.details.size}
@@ -226,22 +337,22 @@ export function ReviewList() {
                 <div className="flex space-x-2">
                   <Button
                     variant="outline"
+                    className="bg-white hover:bg-gray-100 flex items-center"
                     onClick={() => {
                       setSelectedPropertyId(review.id)
                       setIsModalOpen(true)
                     }}
-                    className="flex items-center"
                   >
                     <ChatBubbleLeftIcon className="h-5 w-5 mr-1" />
                     口コミを見る
                   </Button>
                   <Button
                     variant="outline"
+                    className="bg-white hover:bg-gray-100 flex items-center"
                     onClick={() => {
                       setSelectedPropertyId(review.id)
                       setIsAddReviewModalOpen(true)
                     }}
-                    className="flex items-center"
                   >
                     <PencilIcon className="h-5 w-5 mr-1" />
                     口コミを投稿
@@ -255,7 +366,7 @@ export function ReviewList() {
 
       {isModalOpen && selectedPropertyId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
+          <div className="bg-white p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto shadow-xl">
             <h2 className="text-2xl font-bold mb-4">
               {reviews.find((r) => r.id === selectedPropertyId)?.propertyName}の口コミ
             </h2>
