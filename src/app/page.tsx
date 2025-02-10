@@ -1,14 +1,18 @@
 "use client"
 
+import { useState } from "react"
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import { useSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/Header"
-import type React from "react"
+import { SearchResults } from "@/components/SearchResults"
+import type { Review } from "@/types/review"
 
 export default function Home() {
   const { data: session } = useSession()
   const router = useRouter()
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchResults, setSearchResults] = useState<Review[]>([])
 
   const handleReviewClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -17,6 +21,52 @@ export default function Home() {
     } else {
       router.push("/write-review")
     }
+  }
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    // この部分は実際のAPIコールに置き換えてください
+    const allReviews: Review[] = [
+      {
+        id: 1,
+        propertyName: "サンシャインマンション",
+        propertyImages: [
+          "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+          "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
+        ],
+        rating: 4.5,
+        reviewCount: 10,
+        liked: false,
+        details: {
+          rent: "80,000円",
+          size: "25㎡",
+          location: "駅から徒歩5分",
+          features: ["エアコン", "バス・トイレ別", "宅配ボックス"],
+        },
+      },
+      {
+        id: 2,
+        propertyName: "グリーンヒルズ会津",
+        propertyImages: [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+          "https://images.unsplash.com/photo-1584622650111-993a426fbf0a",
+        ],
+        rating: 4.2,
+        reviewCount: 8,
+        liked: false,
+        details: {
+          rent: "65,000円",
+          size: "30㎡",
+          location: "バス停から徒歩3分",
+          features: ["駐車場付き", "ペット可", "オートロック"],
+        },
+      },
+    ]
+
+    const filteredResults = allReviews.filter((review) =>
+      review.propertyName.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+    setSearchResults(filteredResults)
   }
 
   return (
@@ -45,19 +95,24 @@ export default function Home() {
           </button>
 
           {/* 検索フォーム */}
-          <div className="w-full max-w-4xl px-4">
+          <form onSubmit={handleSearch} className="w-full max-w-4xl px-4">
             <div className="relative">
               <input
                 type="text"
                 placeholder="物件名・エリアで検索"
                 className="w-full py-3 px-4 pr-12 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-serif"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <div className="absolute right-0 top-0 h-full flex items-center pr-4">
+              <button type="submit" className="absolute right-0 top-0 h-full flex items-center pr-4">
                 <MagnifyingGlassIcon className="h-6 w-6" />
-              </div>
+              </button>
             </div>
-          </div>
+          </form>
         </div>
+
+        {/* 検索結果 */}
+        {searchResults.length > 0 && <SearchResults results={searchResults} />}
       </main>
     </div>
   )

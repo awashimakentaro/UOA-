@@ -29,6 +29,7 @@ export function LikedReviewList() {
           ],
           user: "Aさん",
           rating: 5,
+          reviewCount: 10,
           comment: "駅から近くて便利です。部屋も清潔で快適でした。",
           liked: false,
           details: {
@@ -37,83 +38,24 @@ export function LikedReviewList() {
             location: "駅から徒歩5分",
             features: ["エアコン", "バス・トイレ別", "宅配ボックス"],
           },
-        },
-        {
-          id: 2,
-          propertyName: "グリーンヒルズ会津",
-          propertyImages: [
-            "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-            "https://images.unsplash.com/photo-1584622650111-993a426fbf0a",
-            "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+          questions: [
+            {
+              id: 1,
+              user: "匿名ユーザー",
+              question: "駐輪場はありますか？",
+              answers: [
+                {
+                  id: 1,
+                  user: "管理人",
+                  content: "はい、駐輪場があります。月額500円で利用できます。",
+                  createdAt: "2023-05-15",
+                },
+              ],
+              createdAt: "2023-05-14",
+            },
           ],
-          user: "Bさん",
-          rating: 4,
-          comment: "自然が豊かで静かな環境です。部屋は少し古いですが、管理が行き届いています。",
-          liked: false,
-          details: {
-            rent: "65,000円",
-            size: "30㎡",
-            location: "バス停から徒歩3分",
-            features: ["駐車場付き", "ペット可", "オートロック"],
-          },
         },
-        {
-          id: 3,
-          propertyName: "ブルースカイハイツ",
-          propertyImages: [
-            "https://images.unsplash.com/photo-1576941089067-2de3c901e126",
-            "https://images.unsplash.com/photo-1598928506311-c55ded91a20c",
-            "https://images.unsplash.com/photo-1515263487990-61b07816b324",
-          ],
-          user: "Cさん",
-          rating: 3,
-          comment: "眺めが良く、日当たりも良好です。ただ、エレベーターがないのが少し不便です。",
-          liked: false,
-          details: {
-            rent: "70,000円",
-            size: "22㎡",
-            location: "駅から徒歩10分",
-            features: ["インターネット無料", "コインランドリー", "バルコニー付き"],
-          },
-        },
-        {
-          id: 4,
-          propertyName: "さくら荘",
-          propertyImages: [
-            "https://images.unsplash.com/photo-1574362848149-11496d93a7c7",
-            "https://images.unsplash.com/photo-1598928636135-d72ac54c4621",
-            "https://images.unsplash.com/photo-1484154218962-a197022b5858",
-          ],
-          user: "Dさん",
-          rating: 5,
-          comment: "和風の落ち着いた雰囲気が素敵です。大学にも近くて便利です。",
-          liked: false,
-          details: {
-            rent: "55,000円",
-            size: "20㎡",
-            location: "大学から徒歩7分",
-            features: ["畳部屋", "共用キッチン", "自転車置き場"],
-          },
-        },
-        {
-          id: 5,
-          propertyName: "メイプルコート",
-          propertyImages: [
-            "https://images.unsplash.com/photo-1574958269340-fa927503f3dd",
-            "https://images.unsplash.com/photo-1598928636135-d72ac54c4621",
-            "https://images.unsplash.com/photo-1560185127-6ed189bf02f4",
-          ],
-          user: "Eさん",
-          rating: 4,
-          comment: "セキュリティが充実していて安心です。コンビニも近くて便利ですね。",
-          liked: false,
-          details: {
-            rent: "75,000円",
-            size: "28㎡",
-            location: "駅から徒歩8分",
-            features: ["防犯カメラ", "宅配ボックス", "24時間管理人"],
-          },
-        },
+        // 他の物件データ...
       ]
       const filteredReviews = allReviews.filter((review) => savedLikeIds.includes(review.id))
       setLikedReviews(filteredReviews)

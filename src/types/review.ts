@@ -1,12 +1,14 @@
 export interface Review {
   id: number
   propertyName: string
-  propertyImages: string[] // 文字列の配列として定義
-  user: string
+  propertyImages: string[]
   rating: number
-  comment: string
+  reviewCount: number
   liked: boolean
   details?: PropertyDetails
+  user?: string
+  comment?: string
+  questions?: Question[]
 }
 
 export interface PropertyDetails {
@@ -21,5 +23,20 @@ export interface PropertyReview {
   user: string
   rating: number
   comment: string
+}
+
+export interface Question {
+  id: number
+  user: string
+  question: string
+  answers: Answer[]
+  createdAt: string
+}
+
+export interface Answer {
+  id: number
+  user: string
+  content: string
+  createdAt: string
 }
 
