@@ -11,7 +11,7 @@ export default function ReviewsPage() {
         <FilterBar />
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-6">すべての口コミ</h1>
+            <h1 className="text-3xl font-bold mb-6">すべての物件</h1>
             <ReviewList />
           </div>
           <div className="hidden lg:block w-[400px]">

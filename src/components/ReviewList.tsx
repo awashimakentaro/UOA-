@@ -2,11 +2,17 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { StarIcon, HeartIcon } from "@heroicons/react/24/solid"
-import type { Review } from "@/types/review"
+import { StarIcon, HeartIcon, ChatBubbleLeftIcon, PencilIcon } from "@heroicons/react/24/solid"
+import type { Review, PropertyReview } from "@/types/review"
+import { Button } from "@/components/ui/button"
+import { PropertyReviews } from "@/components/PropertyReviews"
+import { AddReviewModal } from "@/components/AddReviewModal"
 
 export function ReviewList() {
   const [reviews, setReviews] = useState<Review[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false)
+  const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null)
 
   useEffect(() => {
     // この部分は実際のAPIコールに置き換えてください
@@ -107,9 +113,15 @@ export function ReviewList() {
     const likedReviewIds = updatedReviews.filter((review) => review.liked).map((review) => review.id)
     localStorage.setItem("likedReviews", JSON.stringify(likedReviewIds))
 
-    // カスタムイベントを発行して、LikedReviewListに通知
     const event = new CustomEvent("likedReviewsUpdated", { detail: likedReviewIds })
     window.dispatchEvent(event)
+  }
+
+  const handleAddReview = (propertyId: number, newReview: PropertyReview) => {
+    const savedReviews = JSON.parse(localStorage.getItem(`propertyReviews_${propertyId}`) || "[]")
+    const updatedReviews = [...savedReviews, newReview]
+    localStorage.setItem(`propertyReviews_${propertyId}`, JSON.stringify(updatedReviews))
+    setIsAddReviewModalOpen(false)
   }
 
   return (
@@ -167,17 +179,68 @@ export function ReviewList() {
                 </div>
               )}
 
-              <button
-                onClick={() => handleLike(review.id)}
-                className={`flex items-center ${review.liked ? "text-red-500" : "text-gray-500"} hover:text-red-500 mt-4`}
-              >
-                <HeartIcon className="h-5 w-5 mr-1" />
-                {review.liked ? "いいね済み" : "いいね"}
-              </button>
+              <div className="flex items-center justify-between mt-4">
+                <button
+                  onClick={() => handleLike(review.id)}
+                  className={`flex items-center ${review.liked ? "text-red-500" : "text-gray-500"} hover:text-red-500`}
+                >
+                  <HeartIcon className="h-5 w-5 mr-1" />
+                  {review.liked ? "いいね済み" : "いいね"}
+                </button>
+
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedPropertyId(review.id)
+                      setIsModalOpen(true)
+                    }}
+                    className="flex items-center"
+                  >
+                    <ChatBubbleLeftIcon className="h-5 w-5 mr-1" />
+                    口コミを見る
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedPropertyId(review.id)
+                      setIsAddReviewModalOpen(true)
+                    }}
+                    className="flex items-center"
+                  >
+                    <PencilIcon className="h-5 w-5 mr-1" />
+                    口コミを投稿
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       ))}
+
+      {isModalOpen && selectedPropertyId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">
+              {reviews.find((r) => r.id === selectedPropertyId)?.propertyName}の口コミ
+            </h2>
+            <p className="mb-4">この物件に関する全ての口コミを表示しています。</p>
+            <PropertyReviews propertyId={selectedPropertyId} />
+            <Button onClick={() => setIsModalOpen(false)} className="mt-4">
+              閉じる
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {isAddReviewModalOpen && selectedPropertyId && (
+        <AddReviewModal
+          propertyId={selectedPropertyId}
+          propertyName={reviews.find((r) => r.id === selectedPropertyId)?.propertyName || ""}
+          onClose={() => setIsAddReviewModalOpen(false)}
+          onSubmit={handleAddReview}
+        />
+      )}
     </div>
   )
 }

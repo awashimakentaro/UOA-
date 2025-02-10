@@ -1,13 +1,12 @@
 export interface Review {
   id: number
   propertyName: string
-  propertyImage: string
+  propertyImage?: string
   user: string
   rating: number
   comment: string
   liked: boolean
   details?: PropertyDetails
-  questions?: Question[]
 }
 
 export interface PropertyDetails {
@@ -17,18 +16,10 @@ export interface PropertyDetails {
   features: string[]
 }
 
-export interface Question {
+export interface PropertyReview {
   id: number
   user: string
-  question: string
-  answers: Answer[]
-  createdAt: string
-}
-
-export interface Answer {
-  id: number
-  user: string
-  content: string
-  createdAt: string
+  rating: number
+  comment: string
 }
 
