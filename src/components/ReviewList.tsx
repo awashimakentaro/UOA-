@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { StarIcon, HeartIcon, ChatBubbleLeftIcon, PencilIcon } from "@heroicons/react/24/solid"
+import {
+  StarIcon,
+  HeartIcon,
+  ChatBubbleLeftIcon,
+  PencilIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/solid"
 import type { Review, PropertyReview } from "@/types/review"
 import { Button } from "@/components/ui/button"
 import { PropertyReviews } from "@/components/PropertyReviews"
@@ -10,9 +17,10 @@ import { AddReviewModal } from "@/components/AddReviewModal"
 
 export function ReviewList() {
   const [reviews, setReviews] = useState<Review[]>([])
-  const [isModalOpen, setIsModalOpen] = useState(false) // Update 1: Added isModalOpen state
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false)
   const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: number]: number }>({})
 
   useEffect(() => {
     // この部分は実際のAPIコールに置き換えてください
@@ -20,10 +28,13 @@ export function ReviewList() {
       {
         id: 1,
         propertyName: "サンシャインマンション",
-        propertyImage: "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
-        user: "Aさん",
-        rating: 5,
-        comment: "駅から近くて便利です。部屋も清潔で快適でした。",
+        propertyImages: [
+          "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
+          "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
+          "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+        ],
+        rating: 4.5,
+        reviewCount: 10,
         liked: false,
         details: {
           rent: "80,000円",
@@ -35,10 +46,13 @@ export function ReviewList() {
       {
         id: 2,
         propertyName: "グリーンヒルズ会津",
-        propertyImage: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-        user: "Bさん",
-        rating: 4,
-        comment: "自然が豊かで静かな環境です。部屋は少し古いですが、管理が行き届いています。",
+        propertyImages: [
+          "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+          "https://images.unsplash.com/photo-1584622650111-993a426fbf0a",
+          "https://images.unsplash.com/photo-1493809842364-78817add7ffb",
+        ],
+        rating: 4.2,
+        reviewCount: 8,
         liked: false,
         details: {
           rent: "65,000円",
@@ -50,10 +64,13 @@ export function ReviewList() {
       {
         id: 3,
         propertyName: "ブルースカイハイツ",
-        propertyImage: "https://images.unsplash.com/photo-1576941089067-2de3c901e126",
-        user: "Cさん",
-        rating: 3,
-        comment: "眺めが良く、日当たりも良好です。ただ、エレベーターがないのが少し不便です。",
+        propertyImages: [
+          "https://images.unsplash.com/photo-1576941089067-2de3c901e126",
+          "https://images.unsplash.com/photo-1598928506311-c55ded91a20c",
+          "https://images.unsplash.com/photo-1515263487990-61b07816b324",
+        ],
+        rating: 3.8,
+        reviewCount: 15,
         liked: false,
         details: {
           rent: "70,000円",
@@ -65,25 +82,31 @@ export function ReviewList() {
       {
         id: 4,
         propertyName: "さくら荘",
-        propertyImage: "https://images.unsplash.com/photo-1574362848149-11496d93a7c7",
-        user: "Dさん",
-        rating: 5,
-        comment: "和風の落ち着いた雰囲気が素敵です。大学にも近くて便利です。",
+        propertyImages: [
+          "https://images.unsplash.com/photo-1574362848149-11496d93a7c7",
+          "https://images.unsplash.com/photo-1598928636135-d72ac54c4621",
+          "https://images.unsplash.com/photo-1484154218962-a197022b5858",
+        ],
+        rating: 4.7,
+        reviewCount: 12,
         liked: false,
         details: {
           rent: "55,000円",
           size: "20㎡",
-          location: "大学��ら徒歩7分",
+          location: "大学から徒歩7分",
           features: ["畳部屋", "共用キッチン", "自転車置き場"],
         },
       },
       {
         id: 5,
         propertyName: "メイプルコート",
-        propertyImage: "https://images.unsplash.com/photo-1574958269340-fa927503f3dd",
-        user: "Eさん",
-        rating: 4,
-        comment: "セキュリティが充実していて安心です。コンビニも近くて便利ですね。",
+        propertyImages: [
+          "https://images.unsplash.com/photo-1574958269340-fa927503f3dd",
+          "https://images.unsplash.com/photo-1598928636135-d72ac54c4621",
+          "https://images.unsplash.com/photo-1560185127-6ed189bf02f4",
+        ],
+        rating: 4.3,
+        reviewCount: 9,
         liked: false,
         details: {
           rent: "75,000円",
@@ -94,6 +117,14 @@ export function ReviewList() {
       },
     ]
     setReviews(initialReviews)
+    const initialImageIndex = initialReviews.reduce(
+      (acc, review) => {
+        acc[review.id] = 0
+        return acc
+      },
+      {} as { [key: number]: number },
+    )
+    setCurrentImageIndex(initialImageIndex)
   }, [])
 
   useEffect(() => {
@@ -124,39 +155,76 @@ export function ReviewList() {
     setIsAddReviewModalOpen(false)
   }
 
+  const handlePrevImage = (reviewId: number) => {
+    setCurrentImageIndex((prev) => {
+      const review = reviews.find((r) => r.id === reviewId)
+      if (!review) return prev
+      return {
+        ...prev,
+        [reviewId]: (prev[reviewId] - 1 + review.propertyImages.length) % review.propertyImages.length,
+      }
+    })
+  }
+
+  const handleNextImage = (reviewId: number) => {
+    setCurrentImageIndex((prev) => {
+      const review = reviews.find((r) => r.id === reviewId)
+      if (!review) return prev
+      return {
+        ...prev,
+        [reviewId]: (prev[reviewId] + 1) % review.propertyImages.length,
+      }
+    })
+  }
+
   return (
     <div className="space-y-6">
       {reviews.map((review) => (
         <div key={review.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="md:flex">
-            <div className="md:w-full">
-              {" "}
-              {/* 変更: md:w-1/3 -> md:w-full */}
-              <div className="relative h-48 md:h-full">
+          <div className="flex flex-col md:flex-row">
+            <div className="w-full md:w-[400px] p-4">
+              <div className="w-full h-[300px] md:h-[400px] relative">
                 <Image
-                  src={review.propertyImage || "/placeholder.svg"}
+                  src={review.propertyImages[currentImageIndex[review.id]] || "/placeholder.svg"}
                   alt={review.propertyName}
-                  fill
-                  className="object-cover"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-lg"
                 />
+                {review.propertyImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => handlePrevImage(review.id)}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
+                      aria-label="前の画像"
+                    >
+                      <ChevronLeftIcon className="h-6 w-6 text-gray-800" />
+                    </button>
+                    <button
+                      onClick={() => handleNextImage(review.id)}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
+                      aria-label="次の画像"
+                    >
+                      <ChevronRightIcon className="h-6 w-6 text-gray-800" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
-            <div className="p-6 md:w-full">
-              {" "}
-              {/* 変更: md:w-2/3 -> md:w-full */}
-              <h2 className="text-xl font-semibold mb-2">{review.propertyName}</h2>
-              <div className="flex items-center mb-2">
-                <span className="font-semibold mr-2">{review.user}</span>
-                <div className="flex">
+            <div className="flex-grow p-6">
+              <h2 className="text-2xl font-semibold mb-2">{review.propertyName}</h2>
+              <div className="flex items-center mb-4">
+                <div className="flex mr-2">
                   {[...Array(5)].map((_, i) => (
                     <StarIcon
                       key={i}
-                      className={`h-5 w-5 ${i < review.rating ? "text-yellow-400" : "text-gray-300"}`}
+                      className={`h-5 w-5 ${i < Math.floor(review.rating) ? "text-yellow-400" : "text-gray-300"}`}
                     />
                   ))}
                 </div>
+                <span className="text-lg font-semibold">{review.rating.toFixed(1)}</span>
+                <span className="text-sm text-gray-500 ml-2">({review.reviewCount}件の口コミ)</span>
               </div>
-              <p className="text-gray-700 mb-4">{review.comment}</p>
               {review.details && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-semibold mb-2">物件詳細</h3>
@@ -181,7 +249,7 @@ export function ReviewList() {
                   </ul>
                 </div>
               )}
-              <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center justify-between mt-6">
                 <button
                   onClick={() => handleLike(review.id)}
                   className={`flex items-center ${review.liked ? "text-red-500" : "text-gray-500"} hover:text-red-500`}
@@ -195,7 +263,7 @@ export function ReviewList() {
                     variant="outline"
                     onClick={() => {
                       setSelectedPropertyId(review.id)
-                      setIsModalOpen(true) // Update 3: Modified onClick to open modal
+                      setIsModalOpen(true)
                     }}
                     className="flex items-center"
                   >
@@ -220,31 +288,29 @@ export function ReviewList() {
         </div>
       ))}
 
-      {isModalOpen &&
-        selectedPropertyId && ( // Update 2: Modified conditional rendering
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-4">
-                {reviews.find((r) => r.id === selectedPropertyId)?.propertyName}の口コミ
-              </h2>
-              <p className="mb-4">この物件に関する全ての口コミを表示しています。</p>
-              <PropertyReviews propertyId={selectedPropertyId} />
-              <Button onClick={() => setIsModalOpen(false)} className="mt-4">
-                閉じる
-              </Button>
-            </div>
+      {isModalOpen && selectedPropertyId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">
+              {reviews.find((r) => r.id === selectedPropertyId)?.propertyName}の口コミ
+            </h2>
+            <p className="mb-4">この物件に関する全ての口コミを表示しています。</p>
+            <PropertyReviews propertyId={selectedPropertyId} />
+            <Button onClick={() => setIsModalOpen(false)} className="mt-4">
+              閉じる
+            </Button>
           </div>
-        )}
+        </div>
+      )}
 
-      {isAddReviewModalOpen &&
-        selectedPropertyId && ( // Update 4: Modified AddReviewModal usage
-          <AddReviewModal
-            propertyId={selectedPropertyId}
-            propertyName={reviews.find((r) => r.id === selectedPropertyId)?.propertyName || ""}
-            onClose={() => setIsAddReviewModalOpen(false)}
-            onSubmit={handleAddReview}
-          />
-        )}
+      {isAddReviewModalOpen && selectedPropertyId && (
+        <AddReviewModal
+          propertyId={selectedPropertyId}
+          propertyName={reviews.find((r) => r.id === selectedPropertyId)?.propertyName || ""}
+          onClose={() => setIsAddReviewModalOpen(false)}
+          onSubmit={handleAddReview}
+        />
+      )}
     </div>
   )
 }

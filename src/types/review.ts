@@ -1,7 +1,7 @@
 export interface Review {
   id: number
   propertyName: string
-  propertyImage?: string
+  propertyImages: string[] // 文字列の配列として定義
   user: string
   rating: number
   comment: string

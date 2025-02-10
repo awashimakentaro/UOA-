@@ -151,7 +151,7 @@ export default function WriteReviewPage() {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">特徴</label>
             <div className="flex flex-wrap gap-4">
-              {["エアコン", "バス・トイレ別", "宅配ボックス", "駐車場付き", "ペット可", "オートロック"].map(
+              {["エアコン", "バス���トイレ別", "宅配ボックス", "駐車場付き", "ペット可", "オートロック"].map(
                 (feature) => (
                   <label key={feature} className="inline-flex items-center">
                     <input
