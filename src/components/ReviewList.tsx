@@ -10,7 +10,7 @@ import { AddReviewModal } from "@/components/AddReviewModal"
 
 export function ReviewList() {
   const [reviews, setReviews] = useState<Review[]>([])
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false) // Update 1: Added isModalOpen state
   const [isAddReviewModalOpen, setIsAddReviewModalOpen] = useState(false)
   const [selectedPropertyId, setSelectedPropertyId] = useState<number | null>(null)
 
@@ -73,7 +73,7 @@ export function ReviewList() {
         details: {
           rent: "55,000円",
           size: "20㎡",
-          location: "大学から徒歩7分",
+          location: "大学��ら徒歩7分",
           features: ["畳部屋", "共用キッチン", "自転車置き場"],
         },
       },
@@ -129,7 +129,9 @@ export function ReviewList() {
       {reviews.map((review) => (
         <div key={review.id} className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="md:flex">
-            <div className="md:w-1/3">
+            <div className="md:w-full">
+              {" "}
+              {/* 変更: md:w-1/3 -> md:w-full */}
               <div className="relative h-48 md:h-full">
                 <Image
                   src={review.propertyImage || "/placeholder.svg"}
@@ -139,7 +141,9 @@ export function ReviewList() {
                 />
               </div>
             </div>
-            <div className="p-6 md:w-2/3">
+            <div className="p-6 md:w-full">
+              {" "}
+              {/* 変更: md:w-2/3 -> md:w-full */}
               <h2 className="text-xl font-semibold mb-2">{review.propertyName}</h2>
               <div className="flex items-center mb-2">
                 <span className="font-semibold mr-2">{review.user}</span>
@@ -153,7 +157,6 @@ export function ReviewList() {
                 </div>
               </div>
               <p className="text-gray-700 mb-4">{review.comment}</p>
-
               {review.details && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-semibold mb-2">物件詳細</h3>
@@ -178,7 +181,6 @@ export function ReviewList() {
                   </ul>
                 </div>
               )}
-
               <div className="flex items-center justify-between mt-4">
                 <button
                   onClick={() => handleLike(review.id)}
@@ -193,7 +195,7 @@ export function ReviewList() {
                     variant="outline"
                     onClick={() => {
                       setSelectedPropertyId(review.id)
-                      setIsModalOpen(true)
+                      setIsModalOpen(true) // Update 3: Modified onClick to open modal
                     }}
                     className="flex items-center"
                   >
@@ -218,29 +220,31 @@ export function ReviewList() {
         </div>
       ))}
 
-      {isModalOpen && selectedPropertyId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">
-              {reviews.find((r) => r.id === selectedPropertyId)?.propertyName}の口コミ
-            </h2>
-            <p className="mb-4">この物件に関する全ての口コミを表示しています。</p>
-            <PropertyReviews propertyId={selectedPropertyId} />
-            <Button onClick={() => setIsModalOpen(false)} className="mt-4">
-              閉じる
-            </Button>
+      {isModalOpen &&
+        selectedPropertyId && ( // Update 2: Modified conditional rendering
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold mb-4">
+                {reviews.find((r) => r.id === selectedPropertyId)?.propertyName}の口コミ
+              </h2>
+              <p className="mb-4">この物件に関する全ての口コミを表示しています。</p>
+              <PropertyReviews propertyId={selectedPropertyId} />
+              <Button onClick={() => setIsModalOpen(false)} className="mt-4">
+                閉じる
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {isAddReviewModalOpen && selectedPropertyId && (
-        <AddReviewModal
-          propertyId={selectedPropertyId}
-          propertyName={reviews.find((r) => r.id === selectedPropertyId)?.propertyName || ""}
-          onClose={() => setIsAddReviewModalOpen(false)}
-          onSubmit={handleAddReview}
-        />
-      )}
+      {isAddReviewModalOpen &&
+        selectedPropertyId && ( // Update 4: Modified AddReviewModal usage
+          <AddReviewModal
+            propertyId={selectedPropertyId}
+            propertyName={reviews.find((r) => r.id === selectedPropertyId)?.propertyName || ""}
+            onClose={() => setIsAddReviewModalOpen(false)}
+            onSubmit={handleAddReview}
+          />
+        )}
     </div>
   )
 }

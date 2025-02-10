@@ -12,25 +12,34 @@ export function PropertyReviews({ propertyId }: PropertyReviewsProps) {
   const [reviews, setReviews] = useState<PropertyReview[]>([])
 
   useEffect(() => {
-    const fetchReviews = () => {
-      const savedReviews = JSON.parse(localStorage.getItem(`propertyReviews_${propertyId}`) || "[]")
-      setReviews(savedReviews)
+    // この部分は実際のAPIコールに置き換えてください
+    const fetchReviews = async () => {
+      // ダミーデータを使用
+      const dummyReviews: PropertyReview[] = [
+        {
+          id: 1,
+          user: "Aさん",
+          rating: 5,
+          comment: "駅から近くて便利です。部屋も清潔で快適でした。",
+        },
+        {
+          id: 2,
+          user: "Bさん",
+          rating: 4,
+          comment: "日当たりが良く、静かな環境です。管理人さんの対応も丁寧でした。",
+        },
+        {
+          id: 3,
+          user: "Cさん",
+          rating: 3,
+          comment: "立地は良いですが、少し古い印象があります。設備の更新が必要かもしれません。",
+        },
+      ]
+      setReviews(dummyReviews)
     }
 
     fetchReviews()
-
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === `propertyReviews_${propertyId}`) {
-        fetchReviews()
-      }
-    }
-
-    window.addEventListener("storage", handleStorageChange)
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange)
-    }
-  }, [propertyId])
+  }, [])
 
   return (
     <div className="space-y-4">

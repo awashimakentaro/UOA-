@@ -2,7 +2,13 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ListBulletIcon, HeartIcon, LockClosedIcon, PencilIcon } from "@heroicons/react/24/outline"
+import {
+  ListBulletIcon,
+  HeartIcon,
+  LockClosedIcon,
+  PencilIcon,
+  ChatBubbleLeftRightIcon,
+} from "@heroicons/react/24/outline"
 import { useSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
@@ -40,6 +46,12 @@ export function Header() {
               <Link href="/liked-reviews" className="flex flex-col items-center text-gray-600 hover:text-gray-800">
                 <HeartIcon className="h-6 w-6" />
                 <span className="text-xs mt-1">いいね</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/q-and-a" className="flex flex-col items-center text-gray-600 hover:text-gray-800">
+                <ChatBubbleLeftRightIcon className="h-6 w-6" />
+                <span className="text-xs mt-1">Q&A</span>
               </Link>
             </li>
             <li>
